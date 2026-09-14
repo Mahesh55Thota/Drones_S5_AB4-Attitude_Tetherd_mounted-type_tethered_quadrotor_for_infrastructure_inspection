@@ -154,15 +154,25 @@ The tether inclination angles are represented by:
 
 The position equations are:
 
-$$x = z\tan(\alpha)$$
+$$
+x = z\tan(\alpha)
+$$
 
-$$y = z\tan(\beta)$$
+$$
+y = z\tan(\beta)
+$$
 
 The vertical position is calculated using:
 
-$$z = -\sqrt{\dfrac{l^2(\cos\alpha)^2(\cos\beta)^2}{(\cos\alpha)^2+(\cos\beta)^2-(\cos\alpha)^2(\cos\beta)^2}}$$
-
-The implementation is contained in:
+$$
+z=-\sqrt{
+\frac{
+l^2\cos^2\alpha\cos^2\beta
+}{
+\cos^2\alpha+\cos^2\beta-\cos^2\alpha\cos^2\beta
+}
+}
+$$
 
 ```text
 tether_pos_func.m
