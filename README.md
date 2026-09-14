@@ -164,12 +164,13 @@ $$
 
 The vertical position is calculated using:
 
+
 $$
 z=-\sqrt{
 \frac{
-l^2\cos^2\alpha\cos^2\beta
+l^2(\cos\alpha)^2(\cos\beta)^2
 }{
-\cos^2\alpha+\cos^2\beta-\cos^2\alpha\cos^2\beta
+(\cos\alpha)^2+(\cos\beta)^2-(\cos\alpha)^2(\cos\beta)^2
 }
 }
 $$
