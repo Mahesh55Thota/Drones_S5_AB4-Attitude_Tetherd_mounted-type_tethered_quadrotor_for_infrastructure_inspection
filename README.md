@@ -424,7 +424,7 @@ The paper uses PID control for both camera axes.
 $$
 U_{\phi_C}=
 K_{11}e_{\phi_C}
-+K_{12}\int e_{\phi_C}\,dt
++K_{12}\int e_{\phi_C}dt
 +K_{13}\dot{e}_{\phi_C}
 $$
 
@@ -433,7 +433,7 @@ $$
 $$
 U_{\theta_C}=
 K_{14}e_{\theta_C}
-+K_{15}\int e_{\theta_C}\,dt
++K_{15}\int e_{\theta_C}dt
 +K_{16}\dot{e}_{\theta_C}
 $$
 
