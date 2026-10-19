@@ -533,7 +533,7 @@ Tether geometry → Position estimation → Position PD controller → Desired p
 
 Camera-mounted IMU → Current camera attitude → Camera error calculation → Camera PID controller → Gimbal actuators → Camera stabilization.
 
-In our Gazebo or MuJoCo implementation, simulated sensors and actuators can be used to reproduce these control structures.
+In Pybullet-Gym  implementation, simulated sensors and actuators can be used to reproduce these control structures.
 
 Tunnel navigation, crack detection, defect tracking, and defect localization are additional project extensions. They should be documented separately from the original paper's controller design.
 
@@ -845,19 +845,35 @@ The paper experimentally suspended the quadrotor for attitude tests and used a r
 # 6. Simulation Results
 
 
-### 1. PyBullet Quadrotor Simulation
+### 6.1 PyBullet Quadrotor Simulation
 
 <p align="center">
   <img src="Simulation.jpeg" alt="Tethered Quadrotor Simulation with Camera Stabilization" width="800">
 </p>
 
-### 2. Roll and Pitch Response Plots
+### 6.2 Roll and Pitch Response Plots
 
 <p align="center">
   <img src="Simulation1.jpeg" alt="Roll and Pitch Body Angles and Camera Stabilization Response" width="800">
 </p>
 
+## 6.3 Hovering and Object Inspection
 
+### (a) Hovering and Inspecting Without Noise
+
+The quadrotor hovers near the target object while the camera stabilization system maintains a nearly constant viewing angle under noise-free conditions.
+
+<p align="center">
+  <img src="Simulation3.jpeg" alt="Quadrotor Hovering and Object Inspection Without Noise" width="800">
+</p>
+
+### (b) Hovering and Inspecting With Noise
+
+The quadrotor hovers near the target object while noise is introduced into the simulation. The body roll and pitch angles vary, while the camera stabilization system attempts to maintain a steady viewing angle.
+
+<p align="center">
+  <img src="Simulation4.jpeg" alt="Quadrotor Hovering and Object Inspection With Noise" width="800">
+</p>
 
 
 
