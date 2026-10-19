@@ -906,42 +906,40 @@ The main project structure is:
 
 ```text
 Tethered_Quadrotor_Project/
-├── assets/
-│   └── amrita_logo.jpg
+│
 ├── README.md
-├── main.m
-├── params.m
-├── tether_pos_func.m
-├── build_simulink_model.m
-└── slprj/
-    └── sim/
-        └── varcache/
+│
+└── pybullet_simulation/
+    │
+    ├── camera_hud.py
+    ├── drone_model.py
+    ├── environment.py
+    ├── main.py
+    ├── requirements.txt
+    ├── simulation.py
+    ├── tether_math.py
+    │
+    ├── results/
+    │   ├── Simulation.jpeg
+    │   ├── Simulation1.jpeg
+    │   ├── Simulation3.jpeg
+    │   └── Simulation4.jpeg
+    │
+    └── plots/
 ```
 
-### File Description
-
-| File | Purpose |
-|---|---|
-| `main.m` | Main numerical simulation and plotting script |
-| `params.m` | Physical parameters and controller gains |
-| `tether_pos_func.m` | Tether-based position calculation |
-| `build_simulink_model.m` | Automatically builds the Simulink model |
-| `slprj/` | MATLAB/Simulink generated simulation files |
-| `README.md` | Project documentation |
-
----
 
 # 9. Conclusion
 
-This project implements a MATLAB/Simulink control-oriented model of a camera-mounted tethered quadrotor for infrastructure inspection.
+This project develops a PyBullet-based simulation of a tethered quadrotor with a camera stabilization system for infrastructure inspection.
 
-The system combines tether-based position sensing, quadrotor roll/pitch attitude control, P and PD controller comparison, and a 2-DOF PID camera stabilizer.
+The system brings together quadrotor simulation, tether-related mathematical calculations, body roll and pitch visualization, and camera stabilization. A Gym-compatible environment provides a structured way to run the simulation and observe the system's behaviour.
 
-The MATLAB implementation provides numerical simulations and plots, while the Simulink implementation provides a block-based representation of the major control subsystems.
+The simulation is used to study the quadrotor while hovering and inspecting a target object under both noise-free and noisy conditions. The response plots help visualize changes in the quadrotor's roll and pitch angles and evaluate how well the camera maintains a steady viewing angle.
 
-The reference paper experimentally demonstrated improved roll and pitch attitude control using PD control compared with P control, and demonstrated that the 2-DOF camera stabilizer could maintain camera roll and pitch close to 0° under ±45° base inclination.
+The simulation results illustrate how camera stabilization can help maintain a consistent view even when the quadrotor body experiences angular variations. This is useful for infrastructure inspection tasks where a stable camera view is important for observing structural surfaces and potential cracks.
 
-Overall, the project provides a simulation framework for studying attitude stabilization and camera stabilization of a tethered quadrotor intended for infrastructure inspection.
+Overall, the project provides a Python-based simulation framework for studying quadrotor attitude behaviour and camera stabilization during infrastructure inspection. Future work can focus on improving the physical realism of the tether dynamics, refining controller performance, and integrating image processing techniques for automated crack detection.
 
 ---
 
