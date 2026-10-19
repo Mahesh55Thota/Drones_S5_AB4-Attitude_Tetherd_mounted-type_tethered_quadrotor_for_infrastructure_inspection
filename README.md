@@ -680,39 +680,9 @@ The roll and pitch gains are based on the gains reported in the paper's attitude
 
 ---
 
-## 4.7 P and PD Control Simulation
 
-A 10-second numerical simulation is performed for both roll and pitch.
 
-### Roll
-
-The simulation compares:
-
-```text
-P Controller
-     vs
-PD Controller
-```
-
-The roll disturbance is represented numerically using sinusoidal disturbance terms.
-
-### Pitch
-
-Similarly:
-
-```text
-P Controller
-     vs
-PD Controller
-```
-
-The pitch simulation also uses sinusoidal disturbance terms.
-
-The purpose is to demonstrate the effect of the derivative term on attitude stabilization.
-
----
-
-## 4.8 2-DOF Camera Stabilizer
+## 4.7 2-DOF Camera Stabilizer
 
 The camera stabilizer consists of two independently controlled axes:
 
@@ -736,7 +706,7 @@ This reduces:
 
 ---
 
-## 4.9 Camera PID Control
+## 4.8 Camera PID Control
 
 The camera roll error is:
 
@@ -760,7 +730,7 @@ $$U_{\theta C} = K_{14}e_{\theta C} + K_{15}\int e_{\theta C}dt + K_{16}\dot{e}_
 
 ---
 
-## 4.10 Camera PID Gains
+## 4.9 Camera PID Gains
 
 The gains used in the simulation are:
 
@@ -773,91 +743,27 @@ These are the gain values reported for the camera stabilization experiment in th
 
 ---
 
-## 4.11 Camera Disturbance
-
-The camera stabilizer is tested against a simulated manipulator/body inclination of approximately ±45°.
-
-The disturbance profile is:
-
-```text
-0 s → 7 s       : 0° → +45°
-7 s → 21 s      : +45° → -45°
-21 s → 28 s     : -45° → 0°
-```
-
-The purpose is to test whether the camera can remain close to its desired zero-degree attitude while the base changes orientation.
-
----
-
-## 4.12 Numerical Simulation
-
-The `main.m` script performs the complete numerical simulation.
-
-The process is:
-
-```text
-Load Parameters
-      ↓
-Tether Position Calculation
-      ↓
-Roll P Simulation
-      ↓
-Roll PD Simulation
-      ↓
-Pitch P Simulation
-      ↓
-Pitch PD Simulation
-      ↓
-Camera Roll PID Simulation
-      ↓
-Camera Pitch PID Simulation
-      ↓
-Generate Plots
-```
-
-The numerical integration is performed using a time-stepping approach for angular acceleration, angular velocity, and angle.
-
----
-
-# 5. Experimental Setup
-
-The numerical experiments reproduce the control conditions represented in the reference paper.
-
-### Attitude Control
-
-- Simulation duration: 10 seconds
-- Roll: P vs PD
-- Pitch: P vs PD
-- Desired roll: 0°
-- Desired pitch: 0°
-
-### Camera Stabilization
-
-- Simulation duration: 28 seconds
-- Base/manipulator inclination: approximately ±45°
-- Camera desired roll: 0°
-- Camera desired pitch: 0°
-
-The paper experimentally suspended the quadrotor for attitude tests and used a robot manipulator to incline the camera stabilizer by ±45° for camera stabilization tests.
-
----
-
-# 6. Simulation Results
 
 
-### 6.1 PyBullet Quadrotor Simulation
+
+
+
+# 5. Simulation Results
+
+
+### 5.1 PyBullet Quadrotor Simulation
 
 <p align="center">
   <img src="Simulation.jpeg" alt="Tethered Quadrotor Simulation with Camera Stabilization" width="800">
 </p>
 
-### 6.2 Roll and Pitch Response Plots
+### 5.2 Roll and Pitch Response Plots
 
 <p align="center">
   <img src="Simulation1.jpeg" alt="Roll and Pitch Body Angles and Camera Stabilization Response" width="800">
 </p>
 
-## 6.3 Hovering and Object Inspection
+## 5.3 Hovering and Object Inspection
 
 ### (a) Hovering and Inspecting Without Noise
 
@@ -876,31 +782,7 @@ The quadrotor hovers near the target object while noise is introduced into the s
 </p>
 
 
-
-# 7. Performance Analysis
-
-The project evaluates the control system using the following observations:
-
-### Attitude Control
-
-- P control provides proportional correction based on attitude error.
-- PD control additionally uses angular velocity feedback.
-- The derivative term improves damping and reduces attitude error in the reference experiment.
-
-### Camera Stabilization
-
-- The 2-DOF stabilizer independently controls roll and pitch.
-- The PID controller compensates for base/manipulator inclination.
-- The camera is intended to remain close to the desired zero-degree attitude.
-
-### Tether Position
-
-- Tether inclination and length are used to calculate the quadrotor position.
-- The method does not require GPS position information for this calculation.
-
----
-
-# 8. Project Structure
+# 6. Project Structure
 
 The main project structure is:
 
@@ -929,7 +811,7 @@ Tethered_Quadrotor_Project/
 ```
 
 
-# 9. Conclusion
+# 7. Conclusion
 
 This project develops a PyBullet-based simulation of a tethered quadrotor with a camera stabilization system for infrastructure inspection.
 
@@ -943,7 +825,7 @@ Overall, the project provides a Python-based simulation framework for studying q
 
 ---
 
-# 10. References
+# 8. References
 
 1. Keigo Watanabe, Nao Moritoki, and Isaku Nagai, **"Attitude Control of a Camera Mounted-type Tethered Quadrotor for Infrastructure Inspection,"** IEEE conference paper.
 
