@@ -29,10 +29,7 @@ This project presents a control system for a tethered quadrotor with a camera fo
 
 The project focuses mainly on roll and pitch attitude control of the quadrotor using P and PD controllers. A 2-DOF camera stabilizer is also considered to compensate for the motion of the quadrotor and maintain the camera orientation. PID control is used for the camera's roll and pitch stabilization. The simulation uses the moments of inertia and controller parameters reported in the reference paper.
 
-MATLAB is used to simulate the control system and generate the corresponding response plots. In addition, a Simulink model is developed to represent the major parts of the system, including tether-based position sensing, quadrotor attitude dynamics, attitude control, and camera stabilization. The simulation helps to understand how the quadrotor and camera respond to disturbances and how the controllers maintain the desired orientation.
-
----
-
+A **PyBullet-based Gym environment** is developed to simulate the quadrotor control system and generate the corresponding response plots using Python. The simulation represents the major components of the system, including tether-based position estimation, quadrotor attitude dynamics, attitude control, and camera stabilization. It helps analyze how the quadrotor and camera respond to disturbances and evaluate how the controllers maintain the desired position and orientation during infrastructure inspection.
 # 1. Introduction
 
 Quadrotors are useful for infrastructure inspection because they can take off vertically, hover, and move easily around structures where it may be difficult to use conventional inspection equipment.
@@ -73,13 +70,13 @@ Develop a 2-DOF camera stabilizer for independent roll and pitch control.
 
 Implement PID control for the camera stabilizer to maintain the camera near the desired attitude.
 
-### 2.6 MATLAB Simulation
+### 2.6 PyBullet Simulation
 
-Implement the mathematical models using numerical integration and generate the required plots.
+Use PyBullet to simulate the quadrotor system and evaluate its control response. Record the system behaviour and generate response plots using Python to analyze how the quadrotor responds to changes in position, orientation, and external disturbances.
 
-### 2.7 Simulink Model
+### 2.7 Gym Environment
 
-Automatically construct an interactive Simulink model containing the major subsystems of the proposed control architecture.
+Develop a Gym-compatible environment using PyBullet to organize the quadrotor simulation and test its control behaviour. The environment provides a structured interface for applying control actions, observing the system's response, and evaluating the implemented control components for infrastructure inspection and camera stabilization.
 
 ---
 
@@ -116,12 +113,12 @@ The project is a simulation-based implementation of the control concepts and is 
 
 The project is implemented using:
 
-- MATLAB
-- MATLAB Simulink
-- Numerical ODE integration
-- MATLAB plotting functions
+- Python
+- PyBullet physics simulator
+- Gym-compatible environment
+- Python plotting and analysis tools
 
-The MATLAB script performs the numerical simulations directly, while `build_simulink_model.m` creates the corresponding Simulink model.
+The PyBullet-based simulation models the quadrotor system, while the Gym-compatible environment provides a structured interface for applying control actions and observing the system's response. Python is used to analyze the simulation results and generate plots to evaluate the quadrotor's behaviour and the implemented control components.
 
 ---
 
