@@ -196,6 +196,366 @@ y = -0.0420 m
 ```
 
 ---
+
+# PD and PID Controllers
+
+## 1. PD Controller — Quadrotor Attitude and Position Control
+
+### What is a PD Controller?
+
+PD stands for **Proportional-Derivative**. It is a feedback controller that uses two terms to calculate a corrective control action:
+
+- **Proportional (P) term:** Responds to the current error between the desired value and the actual value.
+- **Derivative (D) term:** Responds to the rate of change or motion, helping to damp oscillations and reduce excessive movement.
+
+In simple words:
+
+- **P:** How far am I from the target?
+- **D:** How quickly am I moving, and how can I reduce excessive motion?
+
+The main purpose of PD control in this project is to make the quadrotor follow the desired attitude and position with reduced error and oscillation.
+
+### 1.1 Quadrotor Attitude PD Controller
+
+In the reference paper, the quadrotor attitude controller controls three rotational directions:
+
+- Roll (`φ`): Tilting left or right.
+- Pitch (`θ`): Tilting forward or backward.
+- Yaw (`ψ`): Rotating around the vertical axis.
+
+The desired angles are represented by `φd`, `θd`, and `ψd`. The current angles are represented by `φ`, `θ`, and `ψ`.
+
+The paper uses the following PD control equations.
+
+**Roll control:**
+
+$$
+U_2=-K_1(\phi-\phi_d)-K_2\dot{\phi}
+$$
+
+**Pitch control:**
+
+$$
+U_3=-K_3(\theta-\theta_d)-K_4\dot{\theta}
+$$
+
+**Yaw control:**
+
+$$
+U_4=-K_5(\psi-\psi_d)-K_6\dot{\psi}
+$$
+
+Here:
+
+- `U2`, `U3`, and `U4` are the roll, pitch, and yaw control inputs.
+- `φ`, `θ`, and `ψ` are the current attitude angles.
+- `φd`, `θd`, and `ψd` are the desired attitude angles.
+- `φ̇`, `θ̇`, and `ψ̇` are the corresponding angular velocities.
+- `K1`, `K3`, and `K5` are proportional gains.
+- `K2`, `K4`, and `K6` are derivative gains.
+
+The controller calculates the control inputs from the attitude errors and angular velocities. These inputs are passed to the motor-mixing stage, which determines the commands sent to the four rotors.
+
+#### How Does the Attitude PD Controller Work?
+
+Suppose the desired roll angle is `10°`, but the actual roll angle is `4°`. The controller detects that the quadrotor has not yet reached the desired angle.
+
+The proportional term responds to this angle error. The derivative term considers how quickly the quadrotor is rolling and helps reduce excessive rotation.
+
+The controller calculates a control input, and the motor commands are adjusted to produce the required roll torque. The quadrotor rotates toward the desired angle, its new attitude is measured, and the controller recalculates the control input.
+
+This process repeats continuously through feedback.
+
+#### Role of the Attitude Gains
+
+| Gain | Purpose |
+|---|---|
+| `K1` | Proportional gain for roll |
+| `K2` | Derivative gain for roll |
+| `K3` | Proportional gain for pitch |
+| `K4` | Derivative gain for pitch |
+| `K5` | Proportional gain for yaw |
+| `K6` | Derivative gain for yaw |
+
+Increasing a proportional gain generally strengthens the correction for a given error. Increasing a derivative gain generally adds damping. However, excessively large gains can cause instability, oscillation, or sensitivity to noisy measurements.
+
+### 1.2 Quadrotor Position PD Controller
+
+The reference paper also uses a PD-style controller to control the quadrotor's horizontal position.
+
+Instead of directly generating motor commands, the position controller calculates the desired pitch and roll angles required to move the quadrotor toward its target.
+
+**X-direction position control:**
+
+$$
+\theta_d=-K_7(x-x_d)-K_8\dot{x}
+$$
+
+**Y-direction position control:**
+
+$$
+\phi_d=-K_9(y-y_d)-K_{10}\dot{y}
+$$
+
+Here:
+
+- `x`, `y` are the current horizontal position coordinates.
+- `xd`, `yd` are the desired horizontal position coordinates.
+- `ẋ`, `ẏ` are the current velocities along the X and Y directions.
+- `θd` is the desired pitch angle.
+- `φd` is the desired roll angle.
+- `K7` and `K9` are proportional position gains.
+- `K8` and `K10` are velocity-feedback gains.
+
+The current position can be estimated from the tether geometry described in the paper. The controller compares the current and desired positions and calculates the required attitude commands.
+
+For example, if the quadrotor is far from its desired X position, the proportional term generates a stronger pitch correction. The velocity term considers how quickly the quadrotor is moving and helps reduce excessive motion and overshoot.
+
+The desired pitch and roll are passed to the attitude controller, which then generates the control inputs used by the rotor system.
+
+The complete position and attitude control sequence is:
+
+**Tether measurements → Position estimation → Position PD controller → Desired pitch and roll → Attitude PD controller → Motor mixing → Quadrotor movement → Updated feedback.**
+
+The paper keeps the vertical control input `U1` constant so that the tether remains stretched. Therefore, this position controller should not be described as a complete three-axis position controller.
+
+The paper does not provide a detailed derivation for the position gains `K7` to `K10` in its gain-selection section. These gains must therefore be documented and tuned separately in our simulation.
+
+### 1.3 Gain Selection and Tuning for PD Control
+
+The reference paper uses an inertia-based method to obtain initial proportional gains for the quadrotor attitude controller. It then increases and fine-tunes the gains experimentally. The derivative gains are adjusted manually.
+
+The paper reports the following attitude PD settings in its experiments:
+
+| Attitude axis | Proportional gain | Derivative gain |
+|---|---:|---:|
+| Roll | `K1 = 0.625` | `K2 = 0.170` |
+| Pitch | `K3 = 0.810` | `K4 = 0.340` |
+
+These values provide reference settings for our simulation. Since simulated dynamics and actuator models may differ from the physical quadrotor, the controller must be tested and tuned in the simulation environment.
+
+---
+
+## 2. PID Controller — Camera Stabilization
+
+### What is a PID Controller?
+
+PID stands for **Proportional-Integral-Derivative**. It is a feedback controller that combines three terms to calculate a corrective control action:
+
+- **Proportional (P) term:** Responds to the current error.
+- **Integral (I) term:** Accumulates error over time and helps reduce persistent steady-state error.
+- **Derivative (D) term:** Responds to how quickly the error changes and provides damping.
+
+In simple words:
+
+- **P:** How large is the error right now?
+- **I:** How long has the error persisted, and how much has accumulated?
+- **D:** How quickly is the error changing?
+
+The main purpose of PID control in this project is to stabilize the camera's orientation while the quadrotor changes its attitude during infrastructure inspection.
+
+### 2.1 Camera Stabilizer in the Reference Paper
+
+The paper describes a **2-DOF camera stabilizer** that controls camera roll and pitch.
+
+The stabilizer contains:
+
+- A camera mounted on a mechanical gimbal.
+- Two RC servo motors for changing the camera attitude.
+- An MPU-9150 inertia sensor attached to the camera to detect its attitude.
+
+The stabilizer controls two axes:
+
+- Camera roll (`φC`).
+- Camera pitch (`θC`).
+
+The yaw drive of the camera stabilizer was removed to reduce weight and energy consumption. The paper assumes that yaw movement can be handled by the main quadrotor body.
+
+### 2.2 Current and Desired Camera Angles
+
+The current camera angles are represented by:
+
+- `φC`: Current camera roll.
+- `θC`: Current camera pitch.
+
+The desired camera angles are represented by:
+
+- `φCd`: Desired camera roll.
+- `θCd`: Desired camera pitch.
+
+The desired angles are reference values representing the orientation the camera should maintain during inspection.
+
+The paper states that an inertia sensor is attached to the camera and used to detect its attitude. The sensor specified in the physical implementation is the MPU-9150.
+
+In our simulation, a simulated camera-mounted IMU can provide the equivalent attitude feedback.
+
+### 2.3 Camera Attitude Errors
+
+The paper defines the camera roll and pitch errors as follows.
+
+**Camera roll error:**
+
+$$
+e_{\phi_C}=\phi_{Cd}-\phi_C
+$$
+
+**Camera pitch error:**
+
+$$
+e_{\theta_C}=\theta_{Cd}-\theta_C
+$$
+
+For example, suppose the desired camera roll is `0°`, but the current camera roll is `8°`.
+
+The roll error is:
+
+$$
+e_{\phi_C}=0^\circ-8^\circ=-8^\circ
+$$
+
+This error indicates that the actual camera attitude differs from the desired reference.
+
+### 2.4 Camera PID Control Equations
+
+The paper uses PID control for both camera axes.
+
+**Camera roll PID controller:**
+
+$$
+U_{\phi_C}=
+K_{11}e_{\phi_C}
++K_{12}\int e_{\phi_C}\,dt
++K_{13}\dot{e}_{\phi_C}
+$$
+
+**Camera pitch PID controller:**
+
+$$
+U_{\theta_C}=
+K_{14}e_{\theta_C}
++K_{15}\int e_{\theta_C}\,dt
++K_{16}\dot{e}_{\theta_C}
+$$
+
+Here:
+
+- `UφC` is the camera roll control input.
+- `UθC` is the camera pitch control input.
+- `K11` and `K14` are proportional gains.
+- `K12` and `K15` are integral gains.
+- `K13` and `K16` are derivative gains.
+- `eφC` and `eθC` are the camera roll and pitch errors.
+- `ėφC` and `ėθC` are the rates of change of those errors.
+
+The controller outputs are mapped to the two camera stabilizer actuators in the physical system or to the corresponding gimbal-joint actuators in the simulation.
+
+### 2.5 How the Three PID Terms Work
+
+#### Proportional Term (P)
+
+The proportional term responds to the current camera error.
+
+For example, if the camera is tilted far away from its desired orientation, the proportional term requests a stronger correction.
+
+$$
+P=K_Pe(t)
+$$
+
+The P term helps the camera respond to deviations from its target.
+
+#### Integral Term (I)
+
+The integral term accumulates the error over time.
+
+$$
+I=K_I\int e(t)dt
+$$
+
+Suppose the camera retains a small error for a long time. The integral term accumulates this error and can provide additional correction to reduce the remaining steady-state error.
+
+In simulation, integral windup protection should be implemented to prevent the accumulated error from becoming excessive when a servo reaches its limits.
+
+#### Derivative Term (D)
+
+The derivative term responds to the rate at which the error changes.
+
+$$
+D=K_D\frac{de(t)}{dt}
+$$
+
+It provides damping and can help reduce overshoot and oscillations. In an implementation, derivative filtering may be useful because directly differentiating noisy measurements can amplify sensor noise.
+
+### 2.6 How the Camera Stabilizer Works
+
+Suppose the quadrotor rolls while moving near a tunnel wall. Since the camera is mounted on the quadrotor, the camera would tend to roll with the body if the stabilizer did nothing.
+
+The camera-mounted IMU detects the change in camera attitude. The controller compares the measured camera roll and pitch with their desired reference values and calculates the errors.
+
+The two PID controllers calculate `UφC` and `UθC`. These commands drive the two stabilizer actuators in the corrective direction. The camera then moves toward the desired orientation.
+
+The IMU detects the new camera attitude, the errors are recalculated, and the controller updates the actuator commands.
+
+The feedback loop is:
+
+**Quadrotor movement → Camera attitude disturbance → Camera IMU measurement → Error calculation → PID controller → Servo commands → Camera correction → New measurement.**
+
+This process continuously repeats so that the camera orientation remains as close as possible to the desired reference, even when the quadrotor tilts.
+
+### 2.7 Camera PID Gain Settings
+
+The paper reports the following camera PID gains, selected through trial and error in the physical experiment:
+
+| Camera axis | P gain | I gain | D gain |
+|---|---:|---:|---:|
+| Roll | `K11 = 170.0` | `K12 = 2.0` | `K13 = 0.1` |
+| Pitch | `K14 = 170.0` | `K15 = 2.0` | `K16 = 0.1` |
+
+These values are reference settings from the paper. They must be verified and, if necessary, retuned in our simulation if the actuator model, units, scaling, or dynamics differ from the physical setup.
+
+---
+
+## 3. Main Difference Between PD and PID Control
+
+| Feature | PD Controller | PID Controller |
+|---|---|---|
+| Terms used | Proportional + Derivative | Proportional + Integral + Derivative |
+| Current error | Yes | Yes |
+| Accumulated error | No | Yes |
+| Rate of change | Yes | Yes |
+| Main role in this project | Quadrotor attitude and horizontal position control | Camera roll and pitch stabilization |
+| Control objective | Move the quadrotor toward the desired position and attitude | Keep the camera close to its desired orientation |
+| Output | Desired roll/pitch from position control, or attitude control inputs | Camera roll/pitch control inputs |
+
+---
+
+## 4. How Both Controllers Work Together
+
+The position controller and attitude controller form the quadrotor control chain.
+
+The position controller uses the tether-based position estimate to calculate desired pitch and roll. The attitude PD controller then uses the desired and current attitude to calculate the control inputs for the rotor system.
+
+At the same time, the camera PID controller independently uses camera attitude feedback to correct camera roll and pitch.
+
+The overall architecture is:
+
+**Quadrotor control:**
+
+Tether geometry → Position estimation → Position PD controller → Desired pitch and roll → Attitude PD controller → Motor mixing → Quadrotor movement.
+
+**Camera stabilization:**
+
+Camera-mounted IMU → Current camera attitude → Camera error calculation → Camera PID controller → Gimbal actuators → Camera stabilization.
+
+In our Gazebo or MuJoCo implementation, simulated sensors and actuators can be used to reproduce these control structures.
+
+Tunnel navigation, crack detection, defect tracking, and defect localization are additional project extensions. They should be documented separately from the original paper's controller design.
+
+## 5. Key Takeaway
+
+The **PD controller** helps the quadrotor achieve the desired position and attitude by using error and motion feedback. The **PID controller** stabilizes the camera by using current error, accumulated error, and the rate of error change to command the camera gimbal.
+
+Both controllers operate continuously in feedback loops: they measure the system, calculate errors, generate control commands, apply corrections, and repeat the process.
+
 ## 4.4 Generation of Desired Roll and Pitch
 
 The tether provides the current position of the quadrotor as $(x,y,z)$. The desired position is defined by $(x_d,y_d)$.
