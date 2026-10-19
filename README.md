@@ -263,16 +263,6 @@ The controller calculates a control input, and the motor commands are adjusted t
 
 This process repeats continuously through feedback.
 
-#### Role of the Attitude Gains
-
-| Gain | Purpose |
-|---|---|
-| `K1` | Proportional gain for roll |
-| `K2` | Derivative gain for roll |
-| `K3` | Proportional gain for pitch |
-| `K4` | Derivative gain for pitch |
-| `K5` | Proportional gain for yaw |
-| `K6` | Derivative gain for yaw |
 
 Increasing a proportional gain generally strengthens the correction for a given error. Increasing a derivative gain generally adds damping. However, excessively large gains can cause instability, oscillation, or sensitivity to noisy measurements.
 
@@ -854,20 +844,6 @@ The paper experimentally suspended the quadrotor for attitude tests and used a r
 
 # 6. Simulation Results
 
-## 6.1 Roll Attitude Control
-
-The project generates a comparison between:
-
-```text
-(a) Roll control using P controller
-(b) Roll control using PD controller
-```
-
-The reference paper reports that the experimental roll error was reduced from a maximum of approximately 12.0° with P control to approximately 8.7° with PD control.
-
-The generated MATLAB plot is used to visualize the corresponding simulated response.
-
----
 <p align="center"> <img src="pitch_P_vs_PD.jpeg" alt="Pitch angle response: P control vs PD control" width="650"> </p>
 
 ## 6.2 Pitch Attitude Control
