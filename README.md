@@ -844,57 +844,20 @@ The paper experimentally suspended the quadrotor for attitude tests and used a r
 
 # 6. Simulation Results
 
-<p align="center"> <img src="pitch_P_vs_PD.jpeg" alt="Pitch angle response: P control vs PD control" width="650"> </p>
 
-## 6.2 Pitch Attitude Control
+### 1. PyBullet Quadrotor Simulation
 
-The project generates:
+<p align="center">
+  <img src="Simulation.jpeg" alt="Tethered Quadrotor Simulation with Camera Stabilization" width="800">
+</p>
 
-```text
-(a) Pitch control using P controller
-(b) Pitch control using PD controller
-```
+### 2. Roll and Pitch Response Plots
 
-The reference paper reports a maximum pitch error of approximately -10.9° with P control and approximately 4.1° with PD control.
+<p align="center">
+  <img src="Simulation1.jpeg" alt="Roll and Pitch Body Angles and Camera Stabilization Response" width="800">
+</p>
 
-This demonstrates the improvement obtained by adding the derivative term.
 
----
-<p align="center"> <img src="roll_P_vs_PD.jpeg" alt="Roll angle response: P control vs PD control" width="650"> </p>
-
-## 6.3 Camera Roll Stabilization
-
-The simulation compares:
-
-```text
-Camera roll angle
-       vs
-Manipulator/base angle
-```
-
-The base is moved through approximately +45° and -45°.
-
-The objective is to maintain the camera roll close to 0° while the base angle changes.
-
----
-<p align="center"> <img src="camera_roll_stabilization.jpeg" alt="Camera roll stabilization vs base angle" width="600"> </p>
-
-## 6.4 Camera Pitch Stabilization
-
-The same procedure is applied to camera pitch.
-
-The simulation compares:
-
-```text
-Camera pitch angle
-       vs
-Manipulator/base angle
-```
-
-The PID controller attempts to compensate for the base motion and maintain the camera attitude near the desired zero-degree reference.
-
----
-<p align="center"> <img src="camera_pitch_stabilization.jpeg" alt="Camera pitch stabilization vs base angle" width="600"> </p>
 
 
 
